@@ -560,3 +560,95 @@ EOT;
         return $icon;
     }
 }
+
+// ------------------------------------------自定义
+if (!function_exists('build_ranstr')) {
+    /**
+     * 获得随机字符串
+     * @param $len             需要的长度
+     * @param $special        是否需要特殊符号
+     * @return string       返回随机字符串
+     */
+    function build_ranstr($len = 10, $special=false)
+    {
+        $chars = array(
+            "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k",
+            "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v",
+            "w", "x", "y", "z", "A", "B", "C", "D", "E", "F", "G",
+            "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R",
+            "S", "T", "U", "V", "W", "X", "Y", "Z", "0", "1", "2",
+            "3", "4", "5", "6", "7", "8", "9"
+        );
+    
+        if($special){
+            $chars = array_merge($chars, array(
+                "!", "@", "#", "$", "?", "|", "{", "/", ":", ";",
+                "%", "^", "&", "*", "(", ")", "-", "_", "[", "]",
+                "}", "<", ">", "~", "+", "=", ",", "."
+            ));
+        }
+    
+        $charsLen = count($chars) - 1;
+        shuffle($chars);                            //打乱数组顺序
+        $str = '';
+        for($i=0; $i<$len; $i++)
+        {
+            $str .= $chars[mt_rand(0, $charsLen)];    //随机取出一位
+        }
+        return $str;
+    }
+}
+
+// 文件上传
+if(!function_exists('build_upload'))
+{
+    /**
+     * 上传文件的封装
+     * @param $name 需要上传的name名字
+     * @return string 文件路径
+     * 例子:
+     * build_upload('avatar'); // /uploads/20240117/vudhs87sdf.jpg
+     */
+    function build_upload($name = '')
+    {
+        $success = [
+            'result' => false,
+            'msg' => '',
+            'data' => ''
+        ];
+
+        //是否有获取到图片对象
+        $file = request()->file($name);
+
+        //没有文件上传的话
+        if(!$file)
+        {
+            $success['msg'] = '无文件上传';
+            $success['result'] = false;
+            return $success;
+        }
+
+        //将上传的文件进行移动到 fast/ == ROOT_PATH public/uploads
+        // DS 系统的分割符号 \ /
+        $info = $file->move(ROOT_PATH . 'public' . DS . 'uploads');
+
+        if($info)
+        {
+            //获取文件上传成功的路径 \
+            $name = '/uploads/'.$info->getSaveName();
+            $name = str_replace("\\", "/", $name);
+
+            $success['msg'] = '成功上传';
+            $success['result'] = true;
+            $success['data'] = $name;
+            return $success;
+        }else
+        {
+            $success['msg'] = $file->getError();
+            $success['result'] = false;
+            return $success;
+        }
+        
+        return $success;
+    }
+}

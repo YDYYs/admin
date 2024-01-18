@@ -1,0 +1,51 @@
+
+<link rel="stylesheet" href="/assets/home/plugin/city/css/city-picker.css">
+<link rel="stylesheet" href="/assets/home/css/profile.css">
+<link rel="stylesheet" href="/assets/home/css/reset.css">
+
+
+<script src="/assets/home/plugin/city/js/city-picker.data.min.js"></script>
+<script src="/assets/home/plugin/city/js/city-picker.min.js"></script>
+
+<form class="mui-input-group" method="post" enctype="multipart/form-data" style="display:inline-block;" >
+    <div class="mui-input-row" style="margin-top: 100px;">
+        <label>邮箱</label>
+        <input type="text" value="{$AutoLogin.email}" name="email" disabled placeholder="请输入邮箱" required>
+    </div>
+    <div class="mui-input-row" style="display: flex;margin-right: 16px;">
+        <label>验证码</label>
+        <div style="display: flex;width: 100%;">
+            <input style="margin-left: 30px;" type="text" name="code" class="mui-input-clear" placeholder="请输入验证码" required>
+            <button type="button" class="mui-btn mui-btn-danger send" style="width: 30%;">发送验证码</button>
+        </div>
+    </div>
+    <div class="mui-button-row">
+        <button type="submit" class="mui-btn mui-btn-primary">提交</button>
+        <button type="button" class="mui-btn mui-btn-danger" onclick="history.go(-1)">返回</button>
+    </div>
+</form>
+
+{include file="common/footer" /}
+<script>
+    var time=60;
+    var T;
+   $('.send').click(function(){
+    T=setInterval(()=>{
+        $(this).html(`${time}s`)
+        --time;
+        if(time<=0){
+            clearInterval(T)
+            $(this).html('重新发送验证码')
+        }
+    },1000);
+    // 发送请求
+    $.ajax({
+        url:"{:url('home/business/email')}",
+        dataType:'json',
+        success:(success)=>{
+            // 成功后执行
+            mui.toast(success.msg)
+        }
+    })
+   })
+</script>
