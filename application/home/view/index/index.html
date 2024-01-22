@@ -5,24 +5,15 @@
 <div class="mui-content">
     <div class="swiper mySwiper">
         <div class="swiper-wrapper">
-            <div class="swiper-slide">
-                <a href="">
-                    <img src="/assets/home/images/video5.png">
-                    <p class="mui-slider-title">Javascript从零开始</p>
-                </a>
-            </div>
-            <div class="swiper-slide">
-                <a href="">
-                    <img src="/assets/home/images/video3.png">
-                    <p class="mui-slider-title" >Javascript从零开始1111</p>
-                </a>
-            </div>
-            <div class="swiper-slide">
-                <a href="">
-                    <img src="/assets/home/images/video2.png">
-                    <p class="mui-slider-title">Javascript从零开始222</p>
-                </a>
-            </div>
+            {foreach $top as $item} 
+                <div class="swiper-slide">
+                    <a href="{:url('home/index/detail')}?ids={$item.id}">
+                        <img src="{$item['thumbs']}">
+                        <p class="mui-slider-title">{$item.title}</p>
+                    </a>
+                </div>
+            {/foreach}
+            
         </div>
         <div class="swiper-pagination" style="text-align: right;"></div>
     </div>
@@ -31,70 +22,16 @@
 <div class="mui-content">
     <h5 class="title">精选课程</h5>
     <ul class="mui-table-view mui-grid-view">
-        <li class="mui-table-view-cell mui-media mui-col-xs-6">
-            <a href="details.html">
-                <div class="imgs">
-                    <img class="mui-media-object" src="/assets/home/images/video6.png">
-                </div>
-                <div class="mui-media-body">Java基础视频</div>
-            </a>
-        </li>
-        <li class="mui-table-view-cell mui-media mui-col-xs-6">
-            <a href="details.html">
-                <div class="imgs">
-                    <img class="mui-media-object" src="/assets/home/images/video2.png">
-                </div>
-                <div class="mui-media-body">.Net基础视频</div>
-            </a>
-        </li>
-        <li class="mui-table-view-cell mui-media mui-col-xs-6">
-            <a href="details.html">
-                <div class="imgs">
-                    <img class="mui-media-object" src="/assets/home/images/video.jpg">
-                </div>
-                <div class="mui-media-body">Java基础视频</div>
-            </a>
-        </li>
-        <li class="mui-table-view-cell mui-media mui-col-xs-6">
-            <a href="details.html">
-                <div class="imgs">
-                    <img class="mui-media-object" src="/assets/home/images/video2.png">
-                </div>
-                <div class="mui-media-body">.Net基础视频</div>
-            </a>
-        </li>
-        <li class="mui-table-view-cell mui-media mui-col-xs-6">
-            <a href="details.html">
-                <div class="imgs">
-                    <img class="mui-media-object" src="/assets/home/images/video6.png">
-                </div>
-                <div class="mui-media-body">Java基础视频</div>
-            </a>
-        </li>
-        <li class="mui-table-view-cell mui-media mui-col-xs-6">
-            <a href="details.html">
-                <div class="imgs">
-                    <img class="mui-media-object" src="/assets/home/images/video2.png">
-                </div>
-                <div class="mui-media-body">.Net基础视频</div>
-            </a>
-        </li>
-        <li class="mui-table-view-cell mui-media mui-col-xs-6">
-            <a href="details.html">
-                <div class="imgs">
-                    <img class="mui-media-object" src="/assets/home/images/video.jpg">
-                </div>
-                <div class="mui-media-body">Java基础视频</div>
-            </a>
-        </li>
-        <li class="mui-table-view-cell mui-media mui-col-xs-6">
-            <a href="details.html">
-                <div class="imgs">
-                    <img class="mui-media-object" src="/assets/home/images/video2.png">
-                </div>
-                <div class="mui-media-body">.Net基础视频</div>
-            </a>
-        </li>
+        {foreach $hot as $item} 
+            <li class="mui-table-view-cell mui-media mui-col-xs-6">
+                <a href="{:url('home/index/detail')}?ids={$item.id}">
+                    <div class="imgs">
+                        <img class="mui-media-object" src="{$item['thumbs']}">
+                    </div>
+                    <div class="mui-media-body">{$item.title}</div>
+                </a>
+            </li>
+         {/foreach}
     </ul>
 </div>
 

@@ -1,0 +1,107 @@
+
+<link rel="stylesheet" href="/assets/home/css/search.css">
+<link rel="stylesheet" href="/assets/home/plugin/mescroll/mescroll.min.css">
+
+<!-- 搜索框 -->
+<div class="mui-input-row mui-search" style="height: 55px;">
+    <input type="search" class="mui-input-clear" placeholder="请输入课程名称" name="search" />
+</div>
+
+<!-- 课程列表 使用组件触发加载-->
+<div id="mescroll" class="mescroll" style="padding-bottom:1em;">
+    <ul class="mui-table-view" id="list"> 
+    </ul>
+</div>
+
+<!-- <div class="more">没有更多了..</div> -->
+
+{include file="common/footer" /}
+
+<script src="/assets/home/plugin/mescroll/mescroll.min.js"></script>
+<script>
+    var search='';
+    // 监听输入内容
+    $('input[name=search]').change(function(){
+        search=$.trim($(this).val())
+        // 调用下拉刷新
+        DownCallback();
+    })
+    // 设置组件基本配置
+     var mescroll = new MeScroll('mescroll', {
+        down: {
+            auto: false, //默认情况下，不触发下拉刷新
+            callback: DownCallback,
+        },
+        up: {
+            auto: true, //自动触发
+            isBounce: false,
+            callback: UpCallback,
+            page: {
+                num: 0, //当前页 默认0,回调之前会加1; 即callback(page)会从1开始
+                size: 5 //每页数据条数,默认5
+            },
+            toTop:{ //配置回到顶部按钮
+                duration: 600,
+                src : "/assets/home/plugin/mescroll/mescroll-totop.png", //默认滚动到1000px显示,可配置offset修改
+                offset : 100
+            }
+        }
+    })
+    // 刷新
+    function DownCallback(){
+        // 清空重新发请求
+         $("#list").empty();
+        mescroll.resetUpScroll();//重新请求
+    }
+    // 加载可以接收自定义默认参数
+    function UpCallback(current){
+        let page=current.num;
+        let limit=current.size;
+        $.ajax({
+            url:`{:url('home/index/search')}`,
+            type:'post',
+            data:{page,limit,search},
+            dataType:'json',
+            success:resu=>{
+                // 拿到数据开始渲染
+                if(resu.code==0){
+                    mui.toast(resu.msg,{duration:1000})
+                    mescroll.endBySize(0,0);
+                    return
+                }
+                var list=resu.data.list;
+                var count=resu.data.count;
+                mescroll.endBySize(list.length,count);
+                render(list);
+            },
+            error:err=>{
+                console.log(err)
+            }
+        })
+   }
+   function render(data){
+    for (const item of data) {
+        var str=`<li class="mui-table-view-cell mui-media">
+            <a class="item" href="{:url('home/index/detail')}?ids=${item.id}">
+                <div class="thumb">
+                    <img class="img" src="${item.thumbs}">
+                </div>
+                <div class="info">
+                    <h5 class="title">${item.title}</h5>
+                    <p class="content mui-ellipsis">课程分类：${item.category.name?item.category.name :""}</p>
+                    <p class="content mui-ellipsis">创建时间：${item.createtime_text}</p>
+                    <p class="content mui-ellipsis">${item.content_text}</p>
+                    <p class="bottom">
+                        <span class="like mui-icon mui-icon-starhalf">
+                            <span>${item.likes_text.length}</span>
+                        </span>
+                        <span class="price">￥${item.price}</span>
+                    </p>
+                </div>
+            </a>
+        </li>`
+        $('#list').append(str)//使用累加的方式添加，如果使用jq的html重新赋值则会一直触发上拉加载知道最后没有数据
+    }
+   }
+</script>
+   

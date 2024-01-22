@@ -1,0 +1,265 @@
+    <link rel="stylesheet" href="/assets/home/css/details.css">
+    <!-- 视频组件 -->
+<link rel="stylesheet" href="/assets/home/plugin/ckplayer/css/ckplayer.css" />
+    <!-- <script src="/assets/home/plugin/ckplayer/ckplayer.min.js"></script> -->
+<script src="/assets/home/plugin/ckplayer/js/ckplayer.min.js"></script>
+
+    <div id="cover">
+        <!-- 课程封面 -->
+        <img class="cover_bg" src="{$subject.thumbs}">
+        <!-- 中间播放键 -->
+        <div id="play">
+            <img src="/assets/home/images/play.png" />
+        </div>
+    </div>
+
+<!-- ckplayer视频容器元素 -->
+<div id="video"></div>
+
+<!-- 课程信息 -->
+<div class="head">
+    <div class="info">
+        <h4 class="name">基础语法</h4>
+        <div class="action">
+            {if condition="$islike"}
+            <!-- 点赞 -->
+            <img class="thumbs" src="/assets/home/images/thumbs-up.png" alt="">
+            <!-- 未点赞 -->
+            {else /}
+            <img class="thumbs" src="/assets/home/images/thumbs.png" alt="">
+            {/if}
+            <span class="num">{$subject.likes_text|count}</span>
+        </div>
+    </div>
+</div>
+
+<div class="title">课程介绍</div>
+<table class="list">
+    <tr>
+        <td>课程名称</td>
+        <td>{$subject.title}</td>
+    </tr>
+    <tr class="price">
+        <td>课程价格</td>
+        <td>￥{$subject.price}元</td>
+    </tr>
+    <tr>
+        <td>发布时间</td>
+        <td>{$subject.createtime_text}</td>
+    </tr>
+    <tr>
+        <td>章节总数</td>
+        <td>{$chapter|count}小节</td>
+    </tr>
+</table>
+
+<div class="title">课程章节</div>
+<ul class="mui-table-view" id="list">
+    {if condition="$chapter"}
+        {foreach $chapter as $item}
+            <li class="mui-table-view-cell" data-id="{$item.id}" onclick="switchover(this)">{$item.title}</li>
+        {/foreach}
+    {else /}
+        <li class="mui-table-view-cell">暂无课程章节</li>
+    {/if}
+</ul>
+
+<div class="title">课程描述</div>
+<div class="mui-table-view content">{$subject.content}</div>
+
+
+
+<div class="title">用户评论</div>
+
+<!-- 评论内容 -->
+{if condition="$comment"}
+<ul class="mui-table-view">
+    {foreach $comment as $item}
+    <li class="mui-table-view-cell mui-media">
+        <a href="javascript:;">
+            <img class="mui-media-object mui-pull-left userimg" src="/assets/home/images/rose.jpg">
+            <div class="mui-media-body">
+                {$item['correlate']['nickname']}
+                <p class='mui-ellipsis'>{$item.content}</p>
+            </div>
+        </a>
+    </li>
+    {/foreach}
+</ul>
+{/if}
+
+<div class="more">
+    <a href="{:url('home/index/commentlist')}?sid={$subject.id}" class="mui-btn mui-btn-primary mui-btn-outlined">查看更多评论</a>
+</div>
+
+<!-- 弹出菜单 -->
+<div id="sheet1" class="mui-popover mui-popover-bottom mui-popover-action">
+    <!-- 可选择菜单 -->
+    <ul class="mui-table-view">
+        <li class="mui-table-view-cell">
+            <a id="buy" href="javascript:void(0)">
+                立即购买
+            </a>
+        </li>
+    </ul>
+    <!-- 取消菜单 -->
+    <ul class="mui-table-view">
+        <li class="mui-table-view-cell">
+            <a href="#sheet1"><b>取消</b></a>
+        </li>
+    </ul>
+</div>
+
+<script>
+    $("#iosActionsheetCancel").click(function () {
+        mui('#sheet1').popover('toggle');
+    })
+    var player;
+
+    function switchover(e){
+        // 设置当前元素样式，其余的取消样式
+        $(this).css('color','#f40').siblings().css('color','black');
+        // 显示自己设置的播放的按钮，点击后会重新使用两个id去拿到新的url地址之后再显示播放组件
+        $('#cover').css('display','block');
+        $('#video').css('display','none');
+        player && player.pause()//暂停视频
+        // 修改章节id
+        cid=$(e).data('id');
+    }
+
+    // 点赞
+    $('.thumbs').click(()=>{
+        $.ajax({
+            url:"{:url('home/index/like')}",
+            type:"post",
+            dataType:'json',
+            data: {sid: "{$subject.id}"},
+            success:resu=>{
+                // 提示持续时间一s
+                mui.toast(resu.msg,{duration:1000})
+                if(resu.code==1){
+                    setTimeout(() => {
+                        window.location.reload()
+                    }, 1000);
+                }
+            },  
+            error:err=>{
+                console.log(err)
+            }
+
+        })
+    })
+
+    var sid='{$subject.id}';
+    var cid=$('#list>li:first').data('id');//拿到第一条的id
+    // 设置第一条的选中样式
+    $('#list>li:first').css('color',"#f40")
+    // 点击播放
+    $("#play").on('click', function () {
+        console.log(sid,cid)
+        // 发请求给后端判断是否登录与是否购买
+        $.ajax({
+            url:"{:url('home/index/play')}",
+            type:'post',
+            data:{sid,cid},//课程id和章节id
+            dataType:'json',
+            success:resu=>{
+                if(resu.code===0){
+                    // console.log('成功',resu.msg);
+                    mui.toast(resu.msg,{duration:1000});
+                    // 如果是没有登录不弹出购买
+                    if(resu.msg==="未登录，请先登录"){
+                        console.log('未登录')
+                        return
+                    }
+                    Paydata();
+                    return
+                }
+                // console.log('first',resu.data,!resu.data,resu.msg)//??
+                if(resu.data==''){
+                    mui.toast(resu.msg,{duration:1000});
+                    return
+                }
+                // 得到视频的url地址
+                let url=resu.data.url ? resu.data.url:'';
+                // 使用临时测试的MP4文件
+                urlarr=[
+                    '/uploads/vidosource/一分钟精通如何使用同步空间.mp4',
+                    '/uploads/vidosource/孙楠&韩红-美丽的神话-《神话》电影主题曲.mp4',
+                    '/uploads/vidosource/关淑怡-难得有情人-《新婚蜜语》电视剧主题曲.mp4',
+                ]
+                url=urlarr[Math.floor(Math.random()*urlarr.length)];
+                console.log(url)
+                // return
+                $('#cover').css('display','none');
+                $('#video').css('display','block');
+                //组装参数
+                var params = {
+                    container: '#video',
+                    poster: '{$subject.thumbs}',
+                    autoplay: true,
+                    video: url,
+                    webFull:true,//是否启用页面全屏按钮，默认不启用
+                    theatre:true,//是否启用剧场模式按钮，默认不启用
+                    rightBar:true,//是否开启右边控制栏
+                    smallWindows:true,//是否启用小窗口模式
+                    smallWindowsDrag:true,//小窗口开启时是否可以拖动
+                    screenshot:true,//截图功能是否开启
+                    timeScheduleAdjust:1,//是否可调节播放进度,0不启用，1是启用，2是只能前进（向右拖动），3是只能后退，4是只能前进但能回到第一次拖动时的位置，5是看过的地方可以随意拖动
+                    playbackrateOpen:true,//是否开启控制栏倍速选项
+	                playbackrateList:[0.75,1,1.25,1.5,2,4],//倍速配置值
+                    // seek:'cookie',//指定跳转到cookie记录的时间，使用该属性必需配置属性cookie
+		            // cookie:'chapter',//cookie名称,请在同一域中保持唯一
+                    track:[
+                        {
+                            kind:'subtitles',
+                            src:'/assets/home/plugin/ckplayer/vtt/zh.vtt',
+                            srclang:'zh',
+                            label:'中文',
+                            default:true, //默认使用该字幕
+                        },		
+                    ],
+                }
+
+                //实例化插件
+                player = new ckplayer(params)
+            
+            },
+            error:err=>{
+                console.log(err,'失败')}
+        })
+
+
+        // Paydata()
+    })
+
+    function Paydata() {
+        mui('#sheet1').popover('toggle');
+    }
+
+    // 购买弹出框
+    $("#buy").on('click', function () {
+        mui('#sheet1').popover('toggle');
+        var btnArray = ['否', '是'];
+        mui.confirm('请问您确认购买吗？', '尊敬的用户', btnArray, function (e) {
+            if (e.index === 1) {
+                // 发请求购买
+                $.ajax({
+                    url:"{:url('/home/index/buy')}",
+                    type:'post',
+                    data:{sid},
+                    dataType:'json',
+                    success:(resu)=>{
+                        // 购买成功的提示
+                        // console.log(resu)
+                        mui.toast(resu.msg,{duration:1000})
+                      
+
+                    }
+                })
+                // location.href = "/assets/home/buy.html";
+            }
+        })
+    })
+
+</script>

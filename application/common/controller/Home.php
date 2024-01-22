@@ -19,39 +19,55 @@ class home extends Controller
         // 拿到子类的nologinarr的数组，判断当前方法在不在里面
         
         // 如果数组中没有* 也没有地址方法，则跳过登录验证，如果有其中一个就验证
+        
         $x=in_array("*",$this->nologinarr);
+        
         $f=in_array($this->request->action(),$this->nologinarr);
-        if($x || !$f){
-            // 需要登录，进入登录方法中
-            $this->islogin();
-            // echo "需要登录";
+        // var_dump($this->nologinarr,$x,$f);
+        // exit;
+        if(!$x){
+            // 没有星号看白名单有没有，白名单没有就要登录
+            if(!$f){
+                // 需要登录，进入登录方法中
+                $this->islogin();
+                // echo "需要登录";
+            }
         }
+        
 
    }
    // 判断登录方法
-   public function islogin(){
+   public function islogin($state=true){
         // 获取
         $id=cookie('id')?trim(cookie('id')):0;
         $mobile=cookie('mobile')?trim(cookie('mobile')):'';
-       
+        
         // cookie清除
         if(!$id || empty($mobile)){
             cookie('id',null);
             cookie('mobile',null);
-            $this->error('请重新登录',url('home/index/login'));
-            exit;
+            if($state){
+                $this->error('请重新登录',url('home/index/login'));
+                exit;
+            }
+            return null;
         }
         // 通过手机号查询
         $where=['id'=>$id,'mobile'=>$mobile];
         $login=$this->BusinessModel->where($where)->find();
+        
         // 判断用户的有效性
         if(!$login){
             cookie('id',null);
             cookie('mobile',null);
-            $this->error('非法登录',url('home/index/login'));
-            exit;
+            if($state){
+                $this->error('非法登录',url('home/index/login'));
+                exit;
+            }
+            return null;
         }
         // 将值给模板使用,模板中使用AutoLogin这对象
         $this->view->assign('AutoLogin',$login);
+        return $login;
     }
 }

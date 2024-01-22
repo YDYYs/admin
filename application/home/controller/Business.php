@@ -3,6 +3,7 @@ namespace app\home\controller;
 
 //继承TP的默认的控制器
 use app\common\controller\Home;
+use app\common\library\Email;
 
 // class名称要和文件名一样，开头字母大写
 class Business extends Home {
@@ -12,6 +13,8 @@ class Business extends Home {
 		// 公共模型
 		$this->BusinessModel=model('Business.Business');
 		$this->EmsModel=model("Ems");
+		// $this->RecordModel=model('Business.Record');//交易记录
+		$this->OrderModel=model('Subject.Order');
 	}
 	// 我的页面
 	public function index(){
@@ -137,8 +140,77 @@ class Business extends Home {
 				'code'=>$code,
 				'time'=>0,
 			];
+			// 将验证码丢到数据库中
+			$Addstatus=$this->EmsModel->save($data);
+			if($Addstatus===false){
+				// 失败执行回滚
+				$this->EmsModel->rollback();
+				$this->error('验证码追加失败');
+				exit;
+			}
+			// 上述都成功后发验证码
+			$subject='邮箱身份验证-'.config('site.name');
+			$sendcontent="<div>验证码为:<b>$code</b> 有限器：24小时，过期后需要重新发送验证码</div>";
 
+			$email=new Email;
+
+			$result=$email->to($receiver)//收件人
+			->subject($subject)//主题
+			->message($sendcontent)//内容
+			->send();//开始发送
+			if($result){
+				$this->EmsModel->commit();
+				$this->success('发送验证码成功');
+				exit;
+			}else{
+				$this->EmsModel->rollback();
+				$this->error($email->getError());
+				exit;
+			}
+		}
+
+		// 验证码的有效性检测与认证状态修改
+		// if()
+
+		return $this->view->fetch();
+	}
+
+	// 账单
+	public function order(){
+		if($this->request->isAjax()){
+			$page=$this->request->param('page',1,'trim');
+			$limit=$this->request->param('limit',10,'trim');
+			
+			// 设置偏移量
+			$start=($page-1)*$limit;
+			// 判断是否登录
+			$id=$this->islogin(false)['id'];
+			if(!$id){
+				$this->error('未登录，请先登录');
+				exit;
+			}
+			// 查询这个用户id的交易表的分页数据，先拿到总数
+			$count=$this->OrderModel->where(['busid'=>$id])->count();
+			// var_dump($count);
+			// exit;
+			// 分页获取
+			$list=$this->OrderModel->with('record')->where(['busid'=>$id])->limit($start,$limit)->select();
+			$list=collection($list)->toArray();
+			// 获取到之后就返回给前端
+			$data=[
+				'count'=>$count,
+				'list'=>$list
+			];
+			if($list){
+				$this->success('查询成功',null,$data);
+				exit;
+			}else{
+				$this->error('暂无购买记录');
+				exit;
+			}
 		}
 		return $this->view->fetch();
+		// echo "jsalkjgls";
+		
 	}
 }

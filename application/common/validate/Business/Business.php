@@ -14,6 +14,7 @@ class Business extends  Validate{
         "nickname"=>['require'],
         'money'=>['number','>=:0'],
         'deal'=>['number','in:0,1'],
+        'money' => ['number', '>=:0'],
     ];
 
     // 触发验证规则后的提醒信息,message
@@ -33,10 +34,14 @@ class Business extends  Validate{
         'email.email' => '邮箱格式错误',
         'password.require'  => '密码必填',
         'salt.require'      => '密码盐必填',
+        'money.number'      => '余额必须是数字类型',
+        'money.>='      => '余额必须大于等于0元',
+        
     ];
     // 自定义场景
     protected $scene=[
         'profile'=>['mobile','auth','nickname','email'],
+        'money'=>['money']
     ];
 }
 

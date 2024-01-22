@@ -12,7 +12,7 @@
             {/if}
         </div>
 
-        <div class="nickname wow fadeInUp" data-wow-delay="100ms">"{$AutoLogin.nickname}"</div>
+        <div class="nickname wow fadeInUp" data-wow-delay="100ms">{$AutoLogin.nickname}</div>
     </div>
 
     <!-- 菜单 -->
@@ -27,7 +27,7 @@
                 <img src='/assets/home/images/row.png' />
             </a>
         {/if}
-        <a href="order.html" class="item">
+        <a href="{:url('home/business/order')}" class="item">
             <span>我的订单</span>
             <img src='/assets/home/images/row.png' />
         </a>
@@ -39,7 +39,7 @@
             <span>充值</span>
             <img src='/assets/home/images/row.png' />
         </a>
-        <a href="contact.html" class="item">
+        <a href="{:url('home/index/contact')}" class="item">
             <span>联系我们</span>
             <img src='/assets/home/images/row.png' />
         </a>
