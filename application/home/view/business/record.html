@@ -1,0 +1,111 @@
+
+    <link href="/assets/home/css/order.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="/assets/home/plugin/mescroll/mescroll.min.css">
+
+    <div class="page__bd">
+        <div class="weui-tab">
+            <div id="mescroll" class="mescroll" style="padding-bottom:1em;">
+                <div class="weui-tab__panel" id="list">
+                    <!-- <div class="weui-form-preview">
+                        <div class="weui-form-preview__hd">
+                            <div class="weui-form-preview__item">
+                                <label class="weui-form-preview__label">消费金额</label>
+                                <em class="weui-form-preview__value">¥1111</em>
+                            </div>
+                        </div>
+                        <div class="weui-form-preview__bd">
+                            <div class="weui-form-preview__item">
+                                <label class="weui-form-preview__label">消费描述</label>
+                                <span class="weui-form-preview__value">购买课程</span>
+                            </div>
+                            <div class="weui-form-preview__item">
+                                <label class="weui-form-preview__label">消费时间</label>
+                                <span class="weui-form-preview__value">202305-10 13:00:00</span>
+                            </div>
+                        </div>
+                    </div>
+                    <br /> -->
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+<script src="/assets/home/plugin/mescroll/mescroll.min.js"></script>
+<script>
+    // 设置组件基本配置
+     var mescroll = new MeScroll('mescroll', {
+        down: {
+            auto: false, //默认情况下，不触发下拉刷新
+            callback: DownCallback,
+        },
+        up: {
+            auto: true, //自动触发
+            isBounce: false,
+            callback: UpCallback,
+            page: {
+                num: 0, //当前页 默认0,回调之前会加1; 即callback(page)会从1开始
+                size: 5 //每页数据条数,默认5
+            },
+            toTop:{ //配置回到顶部按钮
+                duration: 600,
+                src : "/assets/home/plugin/mescroll/mescroll-totop.png", //默认滚动到1000px显示,可配置offset修改
+                offset : 100
+            }
+        }
+    })
+    // 下拉刷新
+    function DownCallback(){
+        $('#list').empty();
+        mescroll.resetUpScroll();//重新请求
+    }
+    // 上拉加载
+    function UpCallback(current){
+        let page=current.num;
+        let limit=current.size;
+        $.ajax({
+            url:"{:url('home/business/record')}",
+            type:'post',
+            data:{page,limit},
+            dataType:'json',
+            success:(resu)=>{
+                if(resu.code===0){
+                    // 失败
+                    mui.toast(resu.msg,{duration:1000})
+                    return;
+                }
+                let list=resu.data.list;
+                let count=resu.data.count;
+                mescroll.endBySize(list.length,count);
+                // 渲染
+                // console.log(list)
+                render(list);
+            }
+        })
+    }
+    function render(arr){
+        var str='';
+        for (const item of arr) {
+            str+=`<div class="weui-form-preview">
+                        <div class="weui-form-preview__hd">
+                            <div class="weui-form-preview__item">
+                                <label class="weui-form-preview__label">消费金额</label>
+                                <em class="weui-form-preview__value">¥${item.total}</em>
+                            </div>
+                        </div>
+                        <div class="weui-form-preview__bd">
+                            <div class="weui-form-preview__item">
+                                <label class="weui-form-preview__label">消费描述</label>
+                                <span class="weui-form-preview__value">${item.content}</span>
+                            </div>
+                            <div class="weui-form-preview__item">
+                                <label class="weui-form-preview__label">消费时间</label>
+                                <span class="weui-form-preview__value">${item.createtime_text}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <br />`
+        }
+        $('#list').append(str);
+    }
+</script>

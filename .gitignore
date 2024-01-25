@@ -19,4 +19,10 @@ node_modules
 .zip
 MOBI-课程购买.zip
 静态模板
-/public/*
+/public/assets/css/*
+/public/assets/fonts/*
+/public/assets/less/*
+/public/assets/img/*
+/public/assets/home/*
+# !/assets/
+/uploads/*

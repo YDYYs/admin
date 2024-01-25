@@ -32,49 +32,26 @@
     </div>
 
     <table class="list">
-        <tr>
-            <td>市场销售</td>
-            <td>185-1242-1111</td>
-        </tr>
+       
         <tr class="price">
-            <td>技术支持</td>
-            <td>139-1234-5678</td>
+            <td>公司地址</td>
+            <td>{$address}</td>
         </tr>
         <tr>
-            <td>产品售后</td>
-            <td>178-1422-3211</td>
+            <td>联系电话</td>
+            <td>{$phone}</td>
         </tr>
         <tr>
-            <td>市场销售</td>
-            <td>152-2233-6555</td>
+            <td>公司邮箱</td>
+            <td>{$email}</td>
         </tr>
     </table>
 
-    <div style="text-align: center;margin:20px 0px;">
-        可以在嵌入一个地图插件进来
-    </div>
-
-    <div class="footer">
-        <nav class="footer-bar">
-            <div class="tab-item  mui-active">
-                <a href="index.html">
-                    <span class="mui-icon mui-icon-home"></span>
-                    <span class="mui-tab-label">首页</span>
-                </a>
-            </div>
-            <div class="tab-item">
-                <a href="search.html">
-                    <span class="mui-icon mui-icon-search"></span>
-                    <span class="mui-tab-label">搜索</span>
-                </a>
-            </div>
-            <div class="tab-item">
-                <a href="center.html">
-                    <span class="mui-icon mui-icon-contact"></span>
-                    <span class="mui-tab-label">我的</span>
-                </a>
-            </div>
-        </nav>
+    <div style="text-align: center;margin:5px 0px;border: 1px solid red;height: 300px;">
+        <!-- 可以在嵌入一个地图插件进来 -->
+        <div id="container" style="width: 100%;height: 100%;"></div>
+            <!-- <img src="./img/图层 12.png" alt="" /> -->
+        <div class="rt">
     </div>
 
 <script>
@@ -83,4 +60,18 @@
             el: ".swiper-pagination",
         },
     });
+    function loadJScript() {
+      var script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src =
+        "http://api.map.baidu.com/api?type=webgl&v=1.0&ak=WwUVBMlQ1FbSyOn3yZsUizQTxDVHWhZr&callback=init";
+      document.body.appendChild(script);
+    }
+    function init() {
+      var map = new BMapGL.Map("container"); // 创建Map实例
+      var point = new BMapGL.Point(113.27143, 23.13534); // 创建点坐标
+      map.centerAndZoom(point, 10);
+      map.enableScrollWheelZoom(); // 启用滚轮放大缩小
+    }
+    window.onload = loadJScript; // 异步加载地图
 </script>

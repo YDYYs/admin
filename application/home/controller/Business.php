@@ -15,6 +15,8 @@ class Business extends Home {
 		$this->EmsModel=model("Ems");
 		// $this->RecordModel=model('Business.Record');//交易记录
 		$this->OrderModel=model('Subject.Order');
+		$this->CommentModel=model('Subject.Comment');
+		$this->RecodModel=model('Business.Record');
 	}
 	// 我的页面
 	public function index(){
@@ -191,11 +193,22 @@ class Business extends Home {
 			}
 			// 查询这个用户id的交易表的分页数据，先拿到总数
 			$count=$this->OrderModel->where(['busid'=>$id])->count();
-			// var_dump($count);
-			// exit;
 			// 分页获取
 			$list=$this->OrderModel->with('record')->where(['busid'=>$id])->limit($start,$limit)->select();
 			$list=collection($list)->toArray();
+			// var_dump($list);
+			foreach ($list as $key => $item) {
+				$sid=$item['subid'];//课程id,全局的id是用户id
+				// 查询是否评论过，并把信息添加到返回的数据中
+				$where=['subid'=>$sid,'busid'=>$id];
+				$state=$this->CommentModel->where($where)->find();
+				if($state){
+					// 查询到则表示已经评论了
+					$list[$key]['commentstate']=true;
+				}else{
+					$list[$key]['commentstate']=false;
+				}
+			}
 			// 获取到之后就返回给前端
 			$data=[
 				'count'=>$count,
@@ -210,7 +223,59 @@ class Business extends Home {
 			}
 		}
 		return $this->view->fetch();
-		// echo "jsalkjgls";
-		
+	}
+
+	// 评价
+	public function comment(){
+		$sid= $this->request->param('sid');
+		// 判断是否登录
+		$id=$this->islogin(false)['id'];
+		if(!$id){
+			$this->error('未登录，请先登录');
+			exit;
+		}
+		if($this->request->isAjax()){
+			$content=$this->request->param('content','','trim');
+			$data=['content'=>$content,'busid'=>$id,'subid'=>$sid];
+			$state=$this->CommentModel->save($data);
+			if($state){
+				// 成功
+				$this->success('评论成功');
+				exit;
+			}else{
+				$this->error($this->CommentModel->getError());
+				exit;
+			}
+		}
+		if(!$sid){
+			$this->error('无参数进入',url('home/business/order'));
+			exit;
+		}
+		$this->assign(['sid'=>$sid]);
+		return $this->view->fetch();
+	}
+	// 消费记录
+	public function record(){
+		// 判断是否登录
+		$id=$this->islogin(false)['id'];
+		if(!$id){
+			$this->error('未登录，请先登录');
+			exit;
+		}
+		if($this->request->isAjax()){
+			
+			$count=$this->RecodModel->where(['busid'=>$id])->count();
+			$resu=$this->RecodModel->where(['busid'=>$id])->select();
+			$list=collection($resu);
+			$data=['count'=>$count,'list'=>$list];
+			if($list){
+				$this->success('查询成功',null,$data);
+				exit;
+			}else{
+				$this->error($this->RecodModel->getError());
+				exit;
+			}
+		}
+		return $this->view->fetch();
 	}
 }

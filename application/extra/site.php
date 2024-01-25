@@ -28,12 +28,6 @@ return array (
     'user' => 'User',
     'example' => 'Example',
   ),
-  'attachmentcategory' => 
-  array (
-    'category1' => 'Category1',
-    'category2' => 'Category2',
-    'custom' => 'Custom',
-  ),
   'mail_type' => '1',
   'mail_smtp_host' => 'smtp.qq.com',
   'mail_smtp_port' => '465',
@@ -41,4 +35,13 @@ return array (
   'mail_smtp_pass' => 'password',
   'mail_verify_type' => '2',
   'mail_from' => '10000@qq.com',
+  'attachmentcategory' => 
+  array (
+    'category1' => 'Category1',
+    'category2' => 'Category2',
+    'custom' => 'Custom',
+  ),
+  'address' => '广东省广州市海珠广州大道南448号',
+  'phone' => '13954615646',
+  'email' => '146g4ashk@qq.com',
 );

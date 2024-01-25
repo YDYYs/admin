@@ -2,6 +2,13 @@
     <link href="/assets/home/css/order.css" rel="stylesheet" />
     <link rel="stylesheet" href="/assets/home/plugin/mescroll/mescroll.min.css">
 
+    <style>
+        .introduce{
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    </style>
 
 
 
@@ -96,6 +103,7 @@
                 let count=resu.data.count;
                 mescroll.endBySize(list.length,count);
                 // 渲染
+                console.log(list)
                 render(list);
             }
         })
@@ -120,16 +128,13 @@
                                 <span class="weui-form-preview__value">${item.record.createtime_text}</span>
                             </div>
                             <div class="weui-form-preview__item">
-                                <label class="weui-form-preview__label">课程简介</label>
-                                <span class="weui-form-preview__value">${item.record.content_text}</span>
+                                <label class="weui-form-preview__label ">课程简介</label>
+                                <span class="weui-form-preview__value introduce">${item.record.content_text}</span>
                             </div>
                         </div>
                         <div class="weui-form-preview__ft">
-
-                            <!-- <div class="weui-form-preview__btn weui-form-preview__btn_default">已评价</div>
-                            -->
-                            <a class="weui-form-preview__btn weui-form-preview__btn_default"
-                                href="comment.html">评价</a>
+                            ${item.commentstate ?`<div class="weui-form-preview__btn weui-form-preview__btn_default">已评价</div>`:`<a class="weui-form-preview__btn weui-form-preview__btn_default"
+                               href="{:url('home/business/comment')}?sid=${item.record.id}">评价</a>`}
 
                             <a class="weui-form-preview__btn weui-form-preview__btn_primary"
                                 href="details.html">立即查看</a>

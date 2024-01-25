@@ -116,15 +116,16 @@
     })
     var player;
 
-    function switchover(e){
+    function switchover(that){
         // 设置当前元素样式，其余的取消样式
-        $(this).css('color','#f40').siblings().css('color','black');
+        $(that).css('color','#f40').siblings().css('color','black');
         // 显示自己设置的播放的按钮，点击后会重新使用两个id去拿到新的url地址之后再显示播放组件
         $('#cover').css('display','block');
         $('#video').css('display','none');
         player && player.pause()//暂停视频
         // 修改章节id
-        cid=$(e).data('id');
+        cid=$(that).data('id');
+        scrollTo(0,0);
     }
 
     // 点赞

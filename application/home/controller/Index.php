@@ -465,6 +465,10 @@ class Index extends Home {
 
 	// 联系我们
 	public function contact(){
+		$address =config('site.address');
+		$phone =config('site.phone');
+		$email =config('site.email');
+		$this->assign(['address'=>$address,'phone'=>$phone,'email'=>$email]);
 		return $this->view->fetch();
 	}
 }
