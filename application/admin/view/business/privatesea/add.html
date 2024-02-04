@@ -1,0 +1,85 @@
+<!-- 分配弹窗页面 -->
+<form id="add-form" class="form-horizontal form-ajax" role="form" data-toggle="validator" method="POST">
+    <!-- 昵称 -->
+    <div class="form-group">
+        <label for="nickname" class="control-label col-xs-12 col-sm-2">昵称:</label>
+        <div class="col-xs-12 col-sm-8">
+            <!-- 这里配置的name=row[xxx]是为了提交后查询方便 -->
+            <input type="text" class="form-control" id="name" name="row[nickname]" data-rule="required;" placeholder="昵称" />
+        </div>
+    </div>
+    <!-- 手机号 -->
+    <div class="form-group">
+        <label for="mobile" class="control-label col-xs-12 col-sm-2">手机号:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input type="text" class="form-control" id="name" name="row[mobile]" data-rule="required;" placeholder="请输入手机号码"/>
+        </div>
+    </div>
+    <!-- 邮箱 -->
+    <div class="form-group">
+        <label for="mobile" class="control-label col-xs-12 col-sm-2">邮箱:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input type="text" class="form-control" id="name" name="row[email]" data-rule="required;" placeholder="邮箱" />
+        </div>
+    </div>
+    <!-- 余额 -->
+    <div class="form-group">
+        <label for="money" class="control-label col-xs-12 col-sm-2">余额:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input type="text" class="form-control" id="name" name="row[money]" data-rule="required;" placeholder="0" />
+        </div>
+    </div>
+    <!-- 性别选择 -->
+    <div class="form-group">
+        <label for="sex" class="control-label col-xs-12 col-sm-2">性别:</label>
+        <div class="col-xs-12 col-sm-8">
+            <!-- 后端传初始化默认value数据，input验证器设置为整数,权重值唯一不可重复，默认为最大值+1 -->
+            <!-- <input type="text" class="form-control" id="name" name="row[weight]" value="{$max?$max+1:0}" data-rule="required;integer" placeholder="{:__('CateName')}" /> -->
+            <!-- 后端组装 -->
+            <select name="sex">
+                <option value="0">保密</option>
+                <option value="1">男</option>
+                <option value="2">女</option>
+            </select>
+        </div>
+    </div>
+    <!-- 成交状态 -->
+    <div class="form-group">
+        <label for="deal" class="control-label col-xs-12 col-sm-2">成交状态:</label>
+        <div class="col-xs-12 col-sm-8">
+            <select name="deal">
+                <option value="0">未成交</option>
+                <option value="1">成交</option>
+            </select>
+        </div>
+    </div>
+    <!-- 邮箱状态 -->
+    <div class="form-group">
+        <label for="author" class="control-label col-xs-12 col-sm-2">成交状态:</label>
+        <div class="col-xs-12 col-sm-8">
+            <select name="author">
+                <option value="0">未验证</option>
+                <option value="1">已验证</option>
+            </select>
+        </div>
+    </div>
+    <!-- 客户来源，php生成 -->
+    
+    <!-- <div class="form-group">
+        <label for="source" class="control-label col-xs-12 col-sm-2">成交状态:</label>
+        <div class="col-xs-12 col-sm-8">
+            <select name="source">
+                <option value="0">未验证</option>
+                <option value="1">已验证</option>
+            </select>
+        </div>
+    </div> -->
+    <!-- 提交按钮固定模板 -->
+     <div class="form-group hidden layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-success btn-embossed disabled">{:__('OK')}</button>
+            <button type="button" class="btn btn-default btn-embossed btn-close">{:__('Close')}</button>
+        </div>
+    </div>
+</form>

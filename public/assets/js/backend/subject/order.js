@@ -12,6 +12,7 @@ define([
           // 初始化表格参数
           extend: {
             index_url: `subject/order/index`,
+            del_url:'subject/order/del',
             table: "subject_order",
           },
         });
@@ -26,6 +27,7 @@ define([
           //配置列
           columns: [
             [
+              { checkbox: true },
               {
                 field: "id", //数据库的字段名称
                 title: __("ID"), //设置表头的名字
@@ -49,6 +51,14 @@ define([
                 operate: "RANGE",
                 addclass: "datetimerange",
                 formatter: Table.api.formatter.datetime,
+              },
+              // 操作按钮
+              {
+                field: "operate",
+                title: __("Operate"),
+                table: table,
+                events: Table.api.events.operate,
+                formatter: Table.api.formatter.operate,
               },
             ],
           ],

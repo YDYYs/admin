@@ -11,11 +11,9 @@ define(["jquery", "bootstrap", "backend", "table", "form"], function (
       // 设置选项卡切换事件
       $("a[data-toggle='tab']").on("shown.bs.tab", function () {
         let panel = $($(this).attr("href")); //拿到切换的li中a标签的链接参数
-        console.log(panel);
         // 如果拿到了就进入
         if (panel.length > 0) {
           // 调用自带的方法，并把id值传过去
-          console.log(panel.attr("id"));
           Controller.table[panel.attr("id")].call(this);
           // 切换后重新刷新一次,也就是点击一次左上角的刷新按钮
           $(this).on("click", function () {
@@ -47,7 +45,7 @@ define(["jquery", "bootstrap", "backend", "table", "form"], function (
           url: $.fn.bootstrapTable.defaults.extend.index_url, //发起请求地址，得到的是Table.api.init中的index_url的地址
           pk: "id", //主键
           sortName: "createtime", //排序字段
-          toolbar: "#ToolbarSubject",
+          toolbar: "#ToolbarSubject",//这里是选项卡的结构，需要设置这个否则会出现多个刷新按钮
           //设置表格的表头部分
           columns: [
             [
@@ -62,12 +60,6 @@ define(["jquery", "bootstrap", "backend", "table", "form"], function (
                 title: __("SubjectTitle"), //自定义语言包定义的
                 operate: "LIKE", //配置通用搜索的查询操作符，默认是'='精确搜索
               },
-            //   {
-            //     field: "category.name", //数据库字段
-            //     title: __("SubjectCate"), //自定义语言包定义的
-            //     operate: "LIKE",
-            //   },
-
               {
                 field: "content_text",
                 title: __("SubjectContent"), //使用公共语言包配置好的
@@ -179,7 +171,6 @@ define(["jquery", "bootstrap", "backend", "table", "form"], function (
         Table.api.bindevent(TableSubject);
       },
       order:function(){
-        // console.log('order')
         Table.api.init({
           // 初始化表格参数
           extend: {
@@ -238,7 +229,7 @@ define(["jquery", "bootstrap", "backend", "table", "form"], function (
               {
                 field: "operate",
                 title: __("Operate"),
-                table: TableSubject,
+                table: TableOrder,//这里需要填当前的表id
                 events: Table.api.events.operate,
                 formatter: Table.api.formatter.operate,
                 // 配置自定义按钮
@@ -262,7 +253,7 @@ define(["jquery", "bootstrap", "backend", "table", "form"], function (
             ],
           ],
         });
-
+        // return;
         // 绑定顶上恢复按钮的点击事件
         $(".btn-restore").on("click", function () {
           // 拿到勾选的行的id值,使用自带的Table的api拿到TableSubject的

@@ -16,7 +16,7 @@ define([
             edit_url: "subject/subject/edit",
             del_url: "subject/subject/del",
             chapter_url:'subject/chapter/index',//设置自定义按钮
-            info_url:'subject/subject/info',//设置自定义按钮课程详情
+            info_url:'subject/subject/info',//设置自定义按钮课程详情页面地址
             table: "subject",
           },
         });

@@ -27,15 +27,27 @@ class Order extends Backend
             list($where, $sort, $order, $offset, $limit) = $this->buildparams();
             // 拿到id
             // 获取数量和列表
-            $count=$this->model->order($sort,$order)->limit($offset,$limit)->count();
             $list=$this->model->with('record')->order($sort,$order)->limit($offset,$limit)->select();
+            $count=$this->model->order($sort,$order)->count();
             $list=collection($list)->toArray();
-            // var_dump($list);
-            // exit;
             // 拿到参数返回,key必须是这两个
             $resu=['total'=>$count,'rows'=>$list];
             return json($resu);
         }
        return $this->view->fetch();
     }
+    // 订单回收站列表查询方法
+    public function recyclebin(){
+        if($this->request->isAjax()){
+        // 查询被删除的订单
+        list($where, $sort, $order, $offset, $limit) = $this->buildparams();
+        $data=$this->model->onlyTrashed()->with('record')->where($where)->order($sort,$order)->limit($offset,$limit)->select();
+        $list=collection($data)->toArray();
+        $count=count($list);
+        $resu=['total'=>$count,'rows'=>$list];
+        return json($resu);
+        }
+       
+    }
+
 }

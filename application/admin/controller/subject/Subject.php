@@ -16,6 +16,7 @@ class Subject extends Backend
         parent::__construct();
         $this->model=model('Subject.Subject');
         $this->CateModel=model('Subject.Category');
+        $this->ChapterModel=model('Subject.Chapter');
     }
     // 查看页数据获取
     public function index()
@@ -115,7 +116,32 @@ class Subject extends Backend
         }
         $this->success();
         exit;
+        // 模型配置了软删除
     }
+    // 彻底删除
+    public function destroy($ids=null){
+        echo $ids;
+        // 查询id中的所有视频
+        $where['subid']=array('in',$ids);//对同一字段等于多个id查询
+        $vidourls=$this->ChapterModel->where($where)->column('url');//查询到所有符号条件的URL地址变成一个数组
+        $state=$this->model->destroy($ids,true);
+        if($state===false){
+            $this->error($this->model->getError());
+            exit;
+        }
+        // 删除本地的所有章节视频
+        foreach ($vidourls as $key => $item) {
+            // 判断这个是否存在
+            $isfile=is_file('.'.$item);
+            if($isfile){
+                // 删除本地文件
+                @unlink('.'.$item);
+            }
+        }
+        $this->success();
+        exit;
+    }
+
     // 详情
     public function info($ids=null){
         return $this->view->fetch();
@@ -189,4 +215,5 @@ class Subject extends Backend
         $this->success();
         exit;
     }
+
 }
